@@ -1,13 +1,54 @@
 class MoviesController < ApplicationController
 
+
+  #HW Part 1#
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
+    @dirname = Movie.find(params[:id]).director
+    if @dirname == "" || @dirname == nil
+    @has_director = false
+    else
+    @has_director = true
+    end
   end
-
-  def index
-    @movies = Movie.all
+  
+  def similar
+    dirname = Movie.find(params[:id]).director
+    @movies = Movie.with_director(dirname)
+    
+  end
+  
+  def index #index.html
+    #@movies = Movie.all
+    ######added
+    @all_ratings = Movie.all_ratings #
+    @ratings_to_show = params[:ratings] || {} 
+    ratings_list = @ratings_to_show
+    session[:ratings]= @ratings_to_show #part3
+    if @ratings_to_show == {}
+      ratings_list = Hash[@all_ratings.map {|x| [x, 1]}] #assign any value
+    end
+    
+    #update movies filtered by ratings
+    
+    @movies = Movie.with_ratings(ratings_list.keys)
+    ######
+    @clicked_header = params[:clicked_header] || "" #session[:clicked_header] || ""
+    session[:clicked_header] = @clicked_header #part3
+    #sort movies in order
+    if @clicked_header == "title_header"
+      @movies = @movies.order(:title)
+    end
+    if @clicked_header == "release_date_header"
+      @movies = @movies.order(:release_date)
+    end
+    
+    #######No similar director
+    @has_director = params[:has_director]
+    @no_dir_movie = params[:no_dir_movie]
+    
   end
 
   def new
@@ -42,6 +83,7 @@ class MoviesController < ApplicationController
   # Making "internal" methods private is not required, but is a common practice.
   # This helps make clear which methods respond to requests, and which ones do not.
   def movie_params
-    params.require(:movie).permit(:title, :rating, :description, :release_date)
+    params.require(:movie).permit(:title, :rating, :description, :release_date, :director)
   end
 end
+
