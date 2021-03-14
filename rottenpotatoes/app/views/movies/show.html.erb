@@ -21,7 +21,7 @@
   <%= @movie.description %>
 </p>
 <h4>
-  <%= link_to 'Find Movies With Same Director', @has_director == true ? similar_directors_path(@movie) : movies_path(:has_director => @has_director, :id =>@id) %>
+  <%= link_to 'Find Movies With Same Director', similar_directors_path(@movie) %>
 </h4>
 
 <div class="row">
