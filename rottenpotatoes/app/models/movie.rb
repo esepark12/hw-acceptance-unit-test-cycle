@@ -1,6 +1,6 @@
 class Movie < ActiveRecord::Base
     def self.all_ratings
-        all_ratings = ['G', 'PG', "PG-13", 'R']
+        all_ratings = ['G', 'PG', "PG-13", "NC-17", 'R']
     end
     
     def self.with_ratings(ratings_list)
@@ -10,8 +10,13 @@ class Movie < ActiveRecord::Base
         Movie.where(:rating => ratings_list)
     end
     
-    def self.with_director(dirname)
+    def self.with_director(movie_title)
        #return movies with same director name
+       
+       dirname = Movie.find_by_title(movie_title).director
+       if dirname == "" || dirname.nil?
+           return nil
+       end
        Movie.where(:director => dirname)
     end
 end

@@ -9,14 +9,13 @@ class MoviesController < ApplicationController
   end
   
   def similar
-    dirname = Movie.find(params[:id]).director
-    if dirname.nil? || dirname == ""
-      movie_title = Movie.find(params[:id]).title
+    movie_title = Movie.find(params[:id]).title
+    @movies = Movie.with_director(movie_title)
+    if @movies.nil?
       flash[:notice] = "'#{movie_title}' has no director info."
       redirect_to movies_path
     end
     
-    @movies = Movie.with_director(dirname)
 
   end
   
@@ -43,12 +42,6 @@ class MoviesController < ApplicationController
     end
     if @clicked_header == "release_date_header"
       @movies = @movies.order(:release_date)
-    end
-    
-    #######No similar director
-    
-    if @has_director = params[:has_director]
-      @no_dir_movie = Movie.find(params[:id]).title
     end
     
   end
